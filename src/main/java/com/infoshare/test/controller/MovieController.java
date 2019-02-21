@@ -1,5 +1,6 @@
 package com.infoshare.test.controller;
 
+import com.infoshare.test.model.Category;
 import com.infoshare.test.model.Movie;
 import com.infoshare.test.repository.MovieRepository;
 import com.infoshare.test.service.MovieInsertService;
@@ -41,9 +42,17 @@ public class MovieController {
 
     @PutMapping(value = "/{id}")
     public ResponseEntity<Movie> updateMovie(@RequestBody Movie movie, @PathVariable Long id){
-        return new ResponseEntity<Movie>(HttpStatus.OK);
+        //TODO: do the MovieUpdaaterService
+        return new ResponseEntity<Movie>(movie, HttpStatus.OK);
     }
 
+    @GetMapping("/search")
+    public List<Movie> getAllMoviesFromCategory (@RequestParam Category category)
+    {
+        //Tu mamy listę, więc w sumie nie jest źle nie musimy sie bawic w ResponseEntity i statusy
+        //po prostu pusta lista
+        return movieRepository.findAllByCategory(category);
+    }
 
 
 }
