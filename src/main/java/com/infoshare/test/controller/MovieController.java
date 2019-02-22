@@ -3,13 +3,14 @@ package com.infoshare.test.controller;
 import com.infoshare.test.model.Category;
 import com.infoshare.test.model.Movie;
 import com.infoshare.test.repository.MovieRepository;
+import com.infoshare.test.requests.MovieUpdateRequest;
 import com.infoshare.test.service.MovieInsertService;
+import com.infoshare.test.service.MovieService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/movies")
@@ -17,10 +18,12 @@ public class MovieController {
 
     private final MovieRepository movieRepository;
     private final MovieInsertService movieInsertService;
+    private final MovieService movieService;
 
-    public MovieController(MovieRepository movieRepository, MovieInsertService movieInsertService) {
+    public MovieController(MovieRepository movieRepository, MovieInsertService movieInsertService, MovieService movieService) {
         this.movieRepository = movieRepository;
         this.movieInsertService = movieInsertService;
+        this.movieService = movieService;
     }
 
     @GetMapping
@@ -41,9 +44,10 @@ public class MovieController {
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<Movie> updateMovie(@RequestBody Movie movie, @PathVariable Long id){
-        //TODO: do the MovieUpdaaterService
-        return new ResponseEntity<Movie>(movie, HttpStatus.OK);
+    public Movie updateMovie(@RequestBody MovieUpdateRequest movieUpdateRequest,
+                                             @PathVariable Long id){
+
+        return  movieService.updateMovie(id, movieUpdateRequest);
     }
 
     @GetMapping("/search")
