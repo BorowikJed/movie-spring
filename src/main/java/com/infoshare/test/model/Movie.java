@@ -1,6 +1,8 @@
 package com.infoshare.test.model;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 @Entity
 @Table(name = "movie_table")
@@ -12,17 +14,19 @@ public class Movie {
     private String title;
     private int year;
     private Category category;
-    @ManyToOne
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Director director;
-    @ManyToOne
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Rating rating;
     private int lengthInMinutes;
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    //TODO Dlaczego tu muszę inicjalizować?
+    private List<Actor> actors = new ArrayList<>();
 
-    public Movie() {
-    }
+    public Movie()
+    {}
 
-    public Movie(Long id, String isbn, String title, int year, Category category, Director director, Rating rating, int lengthInMinutes) {
-        this.id = id;
+    public Movie(String isbn, String title, int year, Category category, Director director, Rating rating, int lengthInMinutes, List<Actor> actors) {
         this.isbn = isbn;
         this.title = title;
         this.year = year;
@@ -30,6 +34,7 @@ public class Movie {
         this.director = director;
         this.rating = rating;
         this.lengthInMinutes = lengthInMinutes;
+        this.actors = actors;
     }
 
     public Long getId() {
@@ -128,5 +133,9 @@ public class Movie {
                 ", rating=" + rating +
                 ", lengthInMinutes=" + lengthInMinutes +
                 '}';
+    }
+
+    public void addActor(Actor actor) {
+        this.actors.add(actor);
     }
 }
