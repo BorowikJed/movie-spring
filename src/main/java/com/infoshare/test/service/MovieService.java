@@ -4,6 +4,7 @@ import com.infoshare.test.exceptions.ResourceNotFoundMyException;
 import com.infoshare.test.model.Category;
 import com.infoshare.test.model.Movie;
 import com.infoshare.test.repository.MovieRepository;
+import com.infoshare.test.requests.MovieRequest;
 import com.infoshare.test.requests.MovieUpdateRequest;
 import com.infoshare.test.validation.MovieValidator;
 import org.springframework.stereotype.Service;
@@ -51,5 +52,27 @@ public class MovieService {
 
     public void deleteById(Long id){
         movieRepository.deleteById(id);
+    }
+
+    public Movie addNewMovie(MovieRequest movieRequest, Long id) {
+        //movie.setId(movieIdGeneratorService.generateId());
+        //movieValidator.validateMovie(movie);
+        Movie movie = findById(id);
+
+        //TODO: Ogarnąć czy wysyłać całego Directora czy tylko zmieniane
+        //      propercje w tym requescie
+        movie.setYear(movieRequest.getYear());
+        movie.setLengthInMinutes(movieRequest.getLengthInMinutes());
+        if(movieRequest.getTitle().length()>0)
+            movie.setTitle(movieRequest.getTitle());
+        if(movieRequest.getCategory() != null)
+            movie.setCategory(movieRequest.getCategory());
+        if(movieRequest.getDirector() != null) {
+            movie.getDirector().setLastName(movieRequest.getDirector().getLastName());
+            movie.getDirector().setFirstName(movieRequest.getDirector().getFirstName());
+        }
+        if(movieRequest.getRating() != null)
+            movie.getRating().setScore(movieRequest.getRating().getScore());
+        return movieRepository.save(movie);
     }
 }

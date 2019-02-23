@@ -3,9 +3,11 @@ package com.infoshare.test.service;
 import com.infoshare.test.model.Movie;
 import com.infoshare.test.repository.MovieRepository;
 import com.infoshare.test.repository.MovieRepositoryOld;
+import com.infoshare.test.requests.MovieRequest;
 import com.infoshare.test.validation.MovieValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Service
 public class MovieInsertService {
@@ -28,5 +30,8 @@ public class MovieInsertService {
         //movieValidator.validateMovie(movie);
         return movieRepository.save(movie);
     }
+
+
+
 
 }

@@ -3,6 +3,7 @@ package com.infoshare.test.controller;
 import com.infoshare.test.model.Category;
 import com.infoshare.test.model.Movie;
 import com.infoshare.test.repository.MovieRepository;
+import com.infoshare.test.requests.MovieRequest;
 import com.infoshare.test.requests.MovieUpdateRequest;
 import com.infoshare.test.service.MovieInsertService;
 import com.infoshare.test.service.MovieService;
@@ -38,8 +39,9 @@ public class MovieController {
     }
 
     @PostMapping
-    public ResponseEntity<Movie> addMovie(@RequestBody Movie movie){
-       return ResponseEntity.ok(movieInsertService.addNewMovie(movie));
+    public ResponseEntity<Movie> addMovie(@RequestBody MovieRequest movieRequest,
+                                          @PathVariable Long id){
+       return ResponseEntity.ok(movieService.addNewMovie(movieRequest, id));
     }
 
     @PutMapping(value = "/{id}")
