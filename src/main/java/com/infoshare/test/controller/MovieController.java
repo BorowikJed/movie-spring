@@ -12,50 +12,58 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static org.springframework.http.HttpStatus.OK;
+
 @RestController
 @RequestMapping("/movies")
 public class MovieController {
 
-    private final MovieRepository movieRepository;
+    //private final MovieRepository movieRepository;
     private final MovieInsertService movieInsertService;
     private final MovieService movieService;
 
-    public MovieController(MovieRepository movieRepository, MovieInsertService movieInsertService, MovieService movieService) {
-        this.movieRepository = movieRepository;
+    public MovieController(MovieInsertService movieInsertService, MovieService movieService) {
         this.movieInsertService = movieInsertService;
         this.movieService = movieService;
     }
 
     @GetMapping
     public List<Movie> getAllMovies(){
-        return movieRepository.findAll();
+        return movieService.findAll();
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<Movie> getMovieById(@PathVariable Long id){
-        return movieRepository.findById(id)
-                .map(movie -> ResponseEntity.ok(movie))
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    public Movie getMovieById(@PathVariable Long id){
+       return movieService.findById(id);
     }
 
     @PostMapping
-    public Movie addMovie(@RequestBody Movie movie){
-       return movieInsertService.addNewMovie(movie);
+    public ResponseEntity<Movie> addMovie(@RequestBody Movie movie){
+       return ResponseEntity.ok(movieInsertService.addNewMovie(movie));
     }
 
     @PutMapping(value = "/{id}")
-    public Movie updateMovie(@RequestBody MovieUpdateRequest movieUpdateRequest,
+    public ResponseEntity<Movie> updateMovie(@RequestBody MovieUpdateRequest movieUpdateRequest,
                                              @PathVariable Long id){
-
-        return  movieService.updateMovie(id, movieUpdateRequest);
+        return  ResponseEntity.ok(movieService.updateMovie(id, movieUpdateRequest));
     }
 
     @GetMapping("/search")
-    public List<Movie> getAllMoviesFromCategory (@RequestParam Category category)
-    {
+    public List<Movie> getAllMoviesFromCategory (@RequestParam Category category) {
         //Tu mamy listę, więc w sumie nie jest źle nie musimy sie bawic w ResponseEntity i statusy
         //po prostu pusta lista
-        return movieRepository.findAllByCategory(category);
+        return movieService.getMoviesFromCategory(category);
+    }
+
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<?> deleteMovieById(Long id) {
+       if(movieService.exists(id)) {
+           deleteMovieById(id);
+           return ResponseEntity.noContent().build();
+       }
+       else
+           return  ResponseEntity.notFound().build();
+
     }
 
 

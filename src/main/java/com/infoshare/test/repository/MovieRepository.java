@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface MovieRepository extends JpaRepository<Movie, Long> {
 
-    List<Movie> findAllById(Long id);
-
     List<Movie> findAllByCategory(Category category);
+
+    boolean existsById(Long id);
 }
