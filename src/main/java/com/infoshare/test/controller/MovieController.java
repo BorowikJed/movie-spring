@@ -1,19 +1,21 @@
 package com.infoshare.test.controller;
 
+import com.infoshare.test.dto.ActorDto;
+import com.infoshare.test.dto.MovieDto;
+import com.infoshare.test.dto.mapper.ActorMapper;
+import com.infoshare.test.dto.mapper.MovieMapper;
 import com.infoshare.test.model.Category;
-import com.infoshare.test.model.Movie;
-import com.infoshare.test.repository.MovieRepository;
 import com.infoshare.test.requests.MovieRequest;
 import com.infoshare.test.requests.MovieUpdateRequest;
+import com.infoshare.test.service.ActorService;
 import com.infoshare.test.service.MovieInsertService;
 import com.infoshare.test.service.MovieService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.websocket.server.PathParam;
 import java.util.List;
-
-import static org.springframework.http.HttpStatus.OK;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/movies")
@@ -23,39 +25,66 @@ public class MovieController {
     private final MovieInsertService movieInsertService;
     private final MovieService movieService;
 
+
     public MovieController(MovieInsertService movieInsertService, MovieService movieService) {
         this.movieInsertService = movieInsertService;
         this.movieService = movieService;
+
     }
 
     @GetMapping
-    public List<Movie> getAllMovies(){
-        return movieService.findAll();
+    public List<MovieDto> getAllMovies(){
+        return movieService.findAll()
+                .stream()
+                .map(MovieMapper::map)
+                .collect(Collectors.toList());
     }
 
     @GetMapping(value = "/{id}")
-    public Movie getMovieById(@PathVariable Long id){
-       return movieService.findById(id);
+    public MovieDto getMovieById(@PathVariable Long id){
+       return MovieMapper.map(movieService.findById(id));
     }
 
+    @GetMapping(value = "/{id}/actors")
+    public List<ActorDto> getActorsByMovieId(@PathVariable Long id){
+        return movieService.getActorsByMovie(id)
+                .stream()
+                .map(ActorMapper::map)
+                .collect(Collectors.toList());
+    }
+
+
+
     @PostMapping
-    public ResponseEntity<Movie> addMovie(@RequestBody MovieRequest movieRequest,
+    public ResponseEntity<MovieDto> addMovie(@RequestBody MovieRequest movieRequest,
                                           @PathVariable Long id){
-       return ResponseEntity.ok(movieService.addNewMovie(movieRequest, id));
+       return ResponseEntity.ok(MovieMapper.map(movieService.addNewMovie(movieRequest, id)));
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<Movie> updateMovie(@RequestBody MovieUpdateRequest movieUpdateRequest,
+    public ResponseEntity<MovieDto> updateMovie(@RequestBody MovieUpdateRequest movieUpdateRequest,
                                              @PathVariable Long id){
-        return  ResponseEntity.ok(movieService.updateMovie(id, movieUpdateRequest));
+        return  ResponseEntity.ok(MovieMapper.map(movieService.updateMovie(id, movieUpdateRequest)));
     }
 
     @GetMapping("/search")
-    public List<Movie> getAllMoviesFromCategory (@RequestParam Category category) {
+    public List<MovieDto> getAllMoviesFromCategory (@RequestParam Category category) {
         //Tu mamy listę, więc w sumie nie jest źle nie musimy sie bawic w ResponseEntity i statusy
         //po prostu pusta lista
-        return movieService.getMoviesFromCategory(category);
+        //ale jak DTO to dto i jechane z mapperem
+        return  movieService.getMoviesFromCategory(category)
+                .stream()
+                .map(MovieMapper::map)
+                .collect(Collectors.toList());
     }
+
+//    @GetMapping(value = "/searchByName")
+//    public List<MovieDto> getActorsByMovieId(@RequestParam String firstName){
+//        return movieService.getMoviesByActorsName(firstName)
+//                .stream()
+//                .map(MovieMapper::map)
+//                .collect(Collectors.toList());
+//    }
 
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<?> deleteMovieById(Long id) {

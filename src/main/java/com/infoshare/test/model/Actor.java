@@ -49,4 +49,8 @@ public class Actor {
     public void setMovies(List<Movie> movies) {
         this.movies = movies;
     }
+
+    public Long getId() {
+        return id;
+    }
 }

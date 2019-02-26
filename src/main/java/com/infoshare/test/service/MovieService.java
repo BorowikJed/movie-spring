@@ -1,25 +1,34 @@
 package com.infoshare.test.service;
 
 import com.infoshare.test.exceptions.ResourceNotFoundMyException;
+import com.infoshare.test.model.Actor;
 import com.infoshare.test.model.Category;
 import com.infoshare.test.model.Movie;
+import com.infoshare.test.repository.ActorRepository;
 import com.infoshare.test.repository.MovieRepository;
 import com.infoshare.test.requests.MovieRequest;
 import com.infoshare.test.requests.MovieUpdateRequest;
 import com.infoshare.test.validation.MovieValidator;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 @Service
 public class MovieService {
 
     private final MovieValidator movieValidator;
     private final MovieRepository movieRepository;
+    private final ActorRepository actorRepository;
 
-    public MovieService(MovieValidator movieValidator, MovieRepository movieRepository) {
+    public MovieService(MovieValidator movieValidator, MovieRepository movieRepository, ActorRepository actorRepository) {
         this.movieValidator = movieValidator;
         this.movieRepository = movieRepository;
+        this.actorRepository = actorRepository;
     }
 
     public Movie findById(Long id){
@@ -74,5 +83,31 @@ public class MovieService {
         if(movieRequest.getRating() != null)
             movie.getRating().setScore(movieRequest.getRating().getScore());
         return movieRepository.save(movie);
+    }
+
+//    public Set<Movie> getMoviesByActorsName(String name)
+//    {
+//        List<Actor> actors = actorRepository.findAllByFirstName(name);
+//        Set<Movie> movieSet = new TreeSet<>();
+//
+//        for (Actor actor:actors) {
+//            for (Movie movie : movieRepository.findAllByActors(actor)) {
+//                movieSet.add(movie);
+//            }
+//        }
+//        //actors.forEach(actor -> movieRepository.findAllByActors(actor).forEach(movieSet::add));
+//        return movieSet;
+
+
+       // movieRepository.findAllByActors()
+//    }
+    public List<Actor> getActorsByMovie(Long movieId)
+    {
+        return actorRepository.findAllByMovies(findById(movieId));
+    }
+
+    public List<Actor> findActorsByFirstName(String firstName)
+    {
+        return actorRepository.findAllByFirstName(firstName);
     }
 }
