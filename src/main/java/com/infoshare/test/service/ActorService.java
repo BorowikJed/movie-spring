@@ -10,6 +10,9 @@ import java.util.List;
 
 @Service
 //TODO: czy to zostawić czy nie?
+//odp mam tu zrobić ten serwis tylko, że zależności mogą działać tylko w jedną strone
+//powinienem tutaj porobić wszystkie gówienka z dodawaniem usuwaniem itp dla aktora
+//no i też normalnie actor controller
 public class ActorService {
 
     private final MovieService movieService;

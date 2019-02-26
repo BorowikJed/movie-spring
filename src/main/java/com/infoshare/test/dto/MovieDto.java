@@ -6,6 +6,7 @@ import com.infoshare.test.model.Rating;
 
 public class MovieDto {
 
+
     private Long id;
     private String isbn;
     private String title;
@@ -14,6 +15,20 @@ public class MovieDto {
     private Director director;
     private Rating rating;
     private int lengthInMinutes;
+
+    public MovieDto(String isbn, String title, int year, Category category, Director director, Rating rating, int lengthInMinutes) {
+        this.isbn = isbn;
+        this.title = title;
+        this.year = year;
+        this.category = category;
+        this.director = director;
+        this.rating = rating;
+        this.lengthInMinutes = lengthInMinutes;
+    }
+
+    public MovieDto(){
+
+    };
 
     public Long getId() {
         return id;

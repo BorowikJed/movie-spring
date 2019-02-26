@@ -34,23 +34,17 @@ public class MovieController {
 
     @GetMapping
     public List<MovieDto> getAllMovies(){
-        return movieService.findAll()
-                .stream()
-                .map(MovieMapper::map)
-                .collect(Collectors.toList());
+        return movieService.findAll();
     }
 
     @GetMapping(value = "/{id}")
     public MovieDto getMovieById(@PathVariable Long id){
-       return MovieMapper.map(movieService.findById(id));
+       return movieService.findById(id);
     }
 
     @GetMapping(value = "/{id}/actors")
     public List<ActorDto> getActorsByMovieId(@PathVariable Long id){
-        return movieService.getActorsByMovie(id)
-                .stream()
-                .map(ActorMapper::map)
-                .collect(Collectors.toList());
+        return movieService.getActorsByMovie(id);
     }
 
 
@@ -64,7 +58,7 @@ public class MovieController {
     @PutMapping(value = "/{id}")
     public ResponseEntity<MovieDto> updateMovie(@RequestBody MovieUpdateRequest movieUpdateRequest,
                                              @PathVariable Long id){
-        return  ResponseEntity.ok(MovieMapper.map(movieService.updateMovie(id, movieUpdateRequest)));
+        return  ResponseEntity.ok(movieService.updateMovie(id, movieUpdateRequest));
     }
 
     @GetMapping("/search")
@@ -72,10 +66,7 @@ public class MovieController {
         //Tu mamy listę, więc w sumie nie jest źle nie musimy sie bawic w ResponseEntity i statusy
         //po prostu pusta lista
         //ale jak DTO to dto i jechane z mapperem
-        return  movieService.getMoviesFromCategory(category)
-                .stream()
-                .map(MovieMapper::map)
-                .collect(Collectors.toList());
+        return  movieService.getMoviesFromCategory(category);
     }
 
 //    @GetMapping(value = "/searchByName")

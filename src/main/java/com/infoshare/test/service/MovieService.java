@@ -1,5 +1,9 @@
 package com.infoshare.test.service;
 
+import com.infoshare.test.dto.ActorDto;
+import com.infoshare.test.dto.MovieDto;
+import com.infoshare.test.dto.mapper.ActorMapper;
+import com.infoshare.test.dto.mapper.MovieMapper;
 import com.infoshare.test.exceptions.ResourceNotFoundMyException;
 import com.infoshare.test.model.Actor;
 import com.infoshare.test.model.Category;
@@ -31,17 +35,21 @@ public class MovieService {
         this.actorRepository = actorRepository;
     }
 
-    public Movie findById(Long id){
+    public MovieDto findById(Long id){
+        return MovieMapper.map(findByIdPrivate(id));
+    }
+
+    private Movie findByIdPrivate(Long id){
         return movieRepository.findById(id)
                 .orElseThrow(()->new ResourceNotFoundMyException("Failed to save a movie with an ID: " + id));
     }
 
-    public Movie updateMovie(Long id, MovieUpdateRequest movieUpdateRequest){
+    public MovieDto updateMovie(Long id, MovieUpdateRequest movieUpdateRequest){
 
-        Movie movie = findById(id);
+        Movie movie = findByIdPrivate(id);
         movie.setTitle(movieUpdateRequest.getTitle());
         movie.setYear(movieUpdateRequest.getYear());
-        return movieRepository.save(movie);
+        return MovieMapper.map(movieRepository.save(movie));
     }
 
     public boolean exists(Long id){
@@ -51,12 +59,18 @@ public class MovieService {
             return false;
     }
 
-    public List<Movie> findAll(){
-        return movieRepository.findAll();
+    public List<MovieDto> findAll(){
+        return movieRepository.findAll()
+                .stream()
+                .map(MovieMapper::map)
+                .collect(Collectors.toList());
     }
 
-    public List<Movie> getMoviesFromCategory(Category category){
-        return movieRepository.findAllByCategory(category);
+    public List<MovieDto> getMoviesFromCategory(Category category){
+        return movieRepository.findAllByCategory(category)
+                .stream()
+                .map(MovieMapper::map)
+                .collect(Collectors.toList());
     }
 
     public void deleteById(Long id){
@@ -66,7 +80,7 @@ public class MovieService {
     public Movie addNewMovie(MovieRequest movieRequest, Long id) {
         //movie.setId(movieIdGeneratorService.generateId());
         //movieValidator.validateMovie(movie);
-        Movie movie = findById(id);
+        Movie movie = findByIdPrivate(id);
 
         //TODO: Ogarnąć czy wysyłać całego Directora czy tylko zmieniane
         //      propercje w tym requescie
@@ -101,9 +115,12 @@ public class MovieService {
 
        // movieRepository.findAllByActors()
 //    }
-    public List<Actor> getActorsByMovie(Long movieId)
+    public List<ActorDto> getActorsByMovie(Long movieId)
     {
-        return actorRepository.findAllByMovies(findById(movieId));
+        return actorRepository.findAllByMovies(findByIdPrivate(movieId))
+                .stream()
+                .map(ActorMapper::map)
+                .collect(Collectors.toList());
     }
 
     public List<Actor> findActorsByFirstName(String firstName)
